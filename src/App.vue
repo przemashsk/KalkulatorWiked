@@ -75,6 +75,10 @@ import { store } from "./store.js";
     <div class="row">
       <div class="col-lg-6 p-3 opcje">
         <h4>Wybierz produkt</h4>
+        {{ store.osc }}
+        {{ store.s1 }}
+        {{ store.s2 }}
+        {{ store.szerokoscOtworu }}
         <Typy />
 
         <h4>Technologia</h4>
@@ -86,6 +90,13 @@ import { store } from "./store.js";
           <div class="col-sm-6 col-md-4 mb-3" v-if="store.s2 == 0 || 1 > 0"><ProfilRamy /></div>
           <div class="col-sm-6 col-md-4 mb-3">
             <Rozmiary />
+          </div>
+          <div class="col-sm-6 col-md-4 mb-3" v-if="store.osc == '11kat'">
+            <label>Podkucie pod puszki</label>
+            <select class="custom-select" v-model="store.podkucie">
+              <option value="Nie" selected>Nie</option>
+              <option value="Tak">Tak</option>
+            </select>
           </div>
           <div class="col-sm-6 col-md-4 mb-3" v-if="store.typ == 'D2'">
             <label>Szerokość skrzydła biernego</label>
@@ -222,8 +233,8 @@ import { store } from "./store.js";
         <div id="myDiv" class="p-5 scianka d-flex justify-content-center align-items-end">
           <div class="sciana">
             <div class="otwor">
-              <LiniaPoziom :lineColor="'red'" :klasa="(store.osc == 9) & (store.s2 == 0) ? 'osc9t' : ''" :wymiar="'Szerokość otworu SO(' + store.szerokoscOtworu + ')'" />
-              <LiniaPion :lineColor="'red'" :klasa="(store.osc == 9) & (store.s2 == 0) ? 'osc9l' : ''" :wymiar="'Wysokość otworu HO(' + store.wysokoscOtworu + ')'" />
+              <LiniaPoziom :pod="store.podkucie" :osc="store.osc" :lineColor="'red'" :klasa="(store.osc == 9) & (store.s2 == 0) || store.osc == '11kat' ? 'osc9t' : ''" :wymiar="'Szerokość otworu SO(' + store.szerokoscOtworu + ')'" />
+              <LiniaPion :lineColor="'red'" :klasa="(store.osc == 9) & (store.s2 == 0) || store.osc == '11kat' ? 'osc9l' : ''" :wymiar="'Wysokość otworu HO(' + store.wysokoscOtworu + ')'" />
               <div class="zestaw" :style="{ width: store.szerokoscZestawu + 'px', height: store.wysokoscZestawu + 'px' }">
                 <LiniaPion v-if="store.typ == 'D1N' && store.naswietleGorne" style="right: 230px; left: unset" :lineColor="'green'" :wymiar="'Całkowita Wysokość ' + store.czego + ' (' + store.wysokoscZestawu + ')'" />
                 <LiniaPoziom
@@ -262,7 +273,7 @@ import { store } from "./store.js";
         </div>
         <div class="mt-3 buttons px-3 d-flex justify-content-between">
           <a href="https://wiked.pl/technologia/" target="_blank" class="btn btn-success w-100">Technologia</a>
-          <button class="btn btn-info" @click="savePdf">Save Pdf</button>
+          <!-- <button class="btn btn-info" @click="savePdf">Save Pdf</button> -->
           <button type="button" class="btn btn-success w-100" data-toggle="modal" data-target="#sizing">Wymiarowanie</button>
         </div>
       </div>
@@ -328,6 +339,12 @@ import domtoimage from "dom-to-image";
 import VueHtml2pdf from "vue-html2pdf";
 export default {
   computed: {
+    rozmiar() {
+      return store.rozmiar;
+    },
+    rozmiary() {
+      return store.rozmiary;
+    },
     typ() {
       return store.typ;
     },
@@ -363,6 +380,10 @@ export default {
     }, //   store.skrot = store.skrotMax;
   },
   watch: {
+    rozmiary(newVal, val) {
+      // console.log(val)
+      // console.log(newVal)
+    },
     naswietleLeweSzer(newVal, val) {
       store.naswietleLeweSzer = Math.ceil(newVal / 10) * 10;
       if (newVal > store.naswietleSzerMax) {
@@ -485,55 +506,60 @@ export default {
 
       // Default export is a4 paper, portrait, using millimeters for units
     },
-    szerZes() {
-      var szer = store.szerokoscDrzwi;
-      let oszer = 0;
-      var wys = store.wysokoscDrzwi;
-      if (store.typ == "D1F") {
-        if (store.dostawkaLewa) {
-          szer += store.dostawkaSzer;
-        }
-        if (store.dostawkaPrawa) {
-          szer += store.dostawkaSzer;
-        }
-      }
-      if (store.typ == "D1N") {
-        if (store.naswietleLewe) {
-          szer += store.naswietleLeweSzer;
-        }
-        if (store.naswietlePrawe) {
-          szer += store.naswietlePraweSzer;
-        }
-      }
-      if (store.typ == "D2") {
-        szer += store.rozmiarBierne;
-      }
-      store.szerokoscZestawu = szer;
-      oszer = store.szerokoscZestawu + 2 * store.luz;
-      if (store.s2 == 0 && store.osc == 9) {
-        oszer -= 60;
-      }
+    // szerZes() {
+    //   var szer = store.szerokoscDrzwi;
+    //   let oszer = 0;
+    //   var wys = store.wysokoscDrzwi;
+    //   if (store.typ == "D1F") {
+    //     if (store.dostawkaLewa) {
+    //       szer += store.dostawkaSzer;
+    //     }
+    //     if (store.dostawkaPrawa) {
+    //       szer += store.dostawkaSzer;
+    //     }
+    //   }
+    //   if (store.typ == "D1N") {
+    //     if (store.naswietleLewe) {
+    //       szer += store.naswietleLeweSzer;
+    //     }
+    //     if (store.naswietlePrawe) {
+    //       szer += store.naswietlePraweSzer;
+    //     }
+    //   }
+    //   if (store.typ == "D2") {
+    //     szer += store.rozmiarBierne;
+    //   }
+    //   store.szerokoscZestawu = szer;
+    //   oszer = store.szerokoscZestawu + 2 * store.luz;
+    //   if (store.s2 == 0 && store.osc == 9) {
+    //     // oszer -= 60;
+    //   }
+    //   console.log(store.osc)
+    //   if (store.s2 == 3 && store.osc == '11kat') {
+    //     alert('ytu')
+    //     oszer -= 60;
+    //   }
 
-      store.szerokoscOtworu = oszer;
-      this.skaluj();
-      setTimeout(this.skaluj, 600);
-      return szer;
-    },
-    wysZes() {
-      var wys = store.wysokoscDrzwi;
-      let owys = 0;
-      let luz = store.osc == 9 ? -20 : 10;
-      if (store.typ == "D1N") {
-        if (store.naswietleGorne) {
-          wys += store.naswietleGorneWys;
-        }
-      }
-      store.wysokoscZestawu = wys;
-      store.wysokoscOtworu = wys + luz;
-      this.skaluj();
-      setTimeout(this.skaluj, 600);
-      return wys;
-    },
+    //   store.szerokoscOtworu = oszer;
+    //   this.skaluj();
+    //   setTimeout(this.skaluj, 600);
+    //   return szer;
+    // },
+    // wysZes() {
+    //   var wys = store.wysokoscDrzwi;
+    //   let owys = 0;
+    //   let luz = store.osc == 9 ? -20 : 10;
+    //   if (store.typ == "D1N") {
+    //     if (store.naswietleGorne) {
+    //       wys += store.naswietleGorneWys;
+    //     }
+    //   }
+    //   store.wysokoscZestawu = wys;
+    //   store.wysokoscOtworu = wys + luz;
+    //   this.skaluj();
+    //   setTimeout(this.skaluj, 600);
+    //   return wys;
+    // },
     dopasuj() {
       setTimeout(this.skaluj, 600);
     },
@@ -576,10 +602,5 @@ export default {
     // this.skaluj();
     setTimeout(this.skaluj, 600);
   },
-  // watch: {
-  //   store() {
-  //     console.log("rty");
-  //   },
-  // },
 };
 </script>

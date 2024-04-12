@@ -17,6 +17,9 @@ export default {
     s2() {
       test();
     },
+    podkucie() {
+      test();
+    },
   },
   methods: {
     test() {
@@ -81,6 +84,14 @@ export default {
       if (store.s2 == 0 && store.osc == 9) {
         oszer -= 60;
       }
+      if (store.osc == '11kat') {
+        oszer -= 56;
+        // oszer -= 80; Z podkuciem
+      }
+      if (store.osc == '11kat' && store.podkucie == 'Tak') {
+        oszer -= 24;
+        // oszer -= 80; Z podkuciem
+      }
 
       store.szerokoscOtworu = oszer;
 
@@ -93,9 +104,14 @@ export default {
           wys += store.naswietleGorneWys;
         }
       }
+      
       store.wysokoscZestawu = wys;
       store.wysokoscOtworu = wys + luz;
       // this.skaluj();
+      if (store.osc == '11kat') {
+        store.wysokoscOtworu -= 40;
+        // oszer -= 80; Z podkuciem
+      }
     },
   },
   mutations: {

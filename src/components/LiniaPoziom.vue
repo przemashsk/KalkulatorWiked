@@ -9,12 +9,14 @@ export default {
     lineColor: { type: String, default: "pink" },
     wymiar: { type: String, default: "0" },
     klasa: { type: String, default: "" },
+    pod: { type: String, default: "Nie" },
+    osc: { type: String, default: "Nie" },
   },
 };
 </script>
 
 <template>
-  <div class="line-top" :class="klasa">
+  <div class="line-top" :class="klasa+' '+pod+osc">
     <div class="arrow-left" :style="{ 'border-right': '60px solid ' + lineColor }"></div>
     <div class="line" :style="{ background: lineColor }"></div>
     <span class="text" :style="{ color: lineColor }"> {{ wymiar }} </span>
@@ -31,8 +33,12 @@ export default {
 .tb {
   writing-mode: tb;
 }
-.osc9t {
+/* .osc9t {
   width: calc(100% - 44px);
   left: 20px;
-}
+} */
+/* .tak {
+  width: calc(100% - 84px);
+  left: 40px;
+} */
 </style>

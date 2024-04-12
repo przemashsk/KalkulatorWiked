@@ -363,6 +363,10 @@ input:checked+.slider:before {
     width: calc(100% - 44px);
     left: 20px;
 }
+.Tak11kat {
+    width: calc(100% - 84px);
+    left: 40px;
+}
 
 .osc9l {
     height: calc(100% - 24px);
